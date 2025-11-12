@@ -42,4 +42,14 @@ public class UserController {
         return ResultUtils.success(userService.getLoginUserVO(loginUser));
     }
 
+    @PostMapping("/logout")
+    public BaseResponse<Boolean> userLogout(HttpServletRequest request) {
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
+        boolean result = userService.userLogout(request);
+        return ResultUtils.success(result);
+    }
+
+
+
+
 }
