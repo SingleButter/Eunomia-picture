@@ -4,14 +4,15 @@ import com.zuning.eunomiapicturebackend.common.BaseResponse;
 import com.zuning.eunomiapicturebackend.common.ResultUtils;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
+import com.zuning.eunomiapicturebackend.model.dto.UserLoginRequest;
 import com.zuning.eunomiapicturebackend.model.dto.UserRegisterRequest;
+import com.zuning.eunomiapicturebackend.model.entity.User;
+import com.zuning.eunomiapicturebackend.model.vo.LoginUserVO;
 import com.zuning.eunomiapicturebackend.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -27,4 +28,18 @@ public class UserController {
         long result = userService.userRegister(userRegisterRequest);
         return ResultUtils.success(result);
     }
+
+    @PostMapping("/login")
+    public BaseResponse<LoginUserVO> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(userLoginRequest == null, ErrorCode.PARAMS_ERROR);
+        LoginUserVO result = userService.userLogin(userLoginRequest, request);
+        return ResultUtils.success(result);
+    }
+
+    @GetMapping("/get/login")
+    public BaseResponse<LoginUserVO> getLoginUser(HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        return ResultUtils.success(userService.getLoginUserVO(loginUser));
+    }
+
 }
