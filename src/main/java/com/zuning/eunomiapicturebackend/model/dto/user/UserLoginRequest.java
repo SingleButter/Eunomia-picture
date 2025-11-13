@@ -1,4 +1,4 @@
-package com.zuning.eunomiapicturebackend.model.dto;
+package com.zuning.eunomiapicturebackend.model.dto.user;
 
 import lombok.Data;
 

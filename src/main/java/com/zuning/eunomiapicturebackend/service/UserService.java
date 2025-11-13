@@ -1,13 +1,16 @@
 package com.zuning.eunomiapicturebackend.service;
 
-import com.zuning.eunomiapicturebackend.common.ResultUtils;
-import com.zuning.eunomiapicturebackend.model.dto.UserLoginRequest;
-import com.zuning.eunomiapicturebackend.model.dto.UserRegisterRequest;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zuning.eunomiapicturebackend.model.dto.user.UserLoginRequest;
+import com.zuning.eunomiapicturebackend.model.dto.user.UserQueryRequest;
+import com.zuning.eunomiapicturebackend.model.dto.user.UserRegisterRequest;
 import com.zuning.eunomiapicturebackend.model.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zuning.eunomiapicturebackend.model.vo.LoginUserVO;
+import com.zuning.eunomiapicturebackend.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author wzuni
@@ -43,5 +46,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    UserVO getUserVO(User user);
+
+    List<UserVO> getUserVOList(List<User> userList);
+
+    QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
 
 }
