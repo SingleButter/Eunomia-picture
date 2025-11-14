@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /api
 spring:
+  profiles:
+    active: local
   application:
     name: eunomia-picture.backend
   # database config
@@ -33,3 +35,11 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.zuning.eunomiapicturebackend.controller
+# 对象存储服务配置
+cos:
+  client:
+    host: ${cos.client.host}
+    secretId: ${cos.client.secretId}
+    secretKey: ${cos.client.secretKey}
+    region: ${cos.client.region}
+    bucket: ${cos.client.bucket}
