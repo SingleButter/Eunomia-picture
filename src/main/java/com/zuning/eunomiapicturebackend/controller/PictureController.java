@@ -10,10 +10,7 @@ import com.zuning.eunomiapicturebackend.constant.UserConstant;
 import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureEditRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUpdateRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
+import com.zuning.eunomiapicturebackend.model.dto.picture.*;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
 import com.zuning.eunomiapicturebackend.model.entity.User;
 import com.zuning.eunomiapicturebackend.model.vo.PictureTagCategory;
@@ -47,7 +44,7 @@ public class PictureController {
      * 上传图片（可重新上传）
      */
     @PostMapping("/upload")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    //@AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<PictureVO> uploadPicture(
             @RequestPart("file") MultipartFile multipartFile,
             PictureUploadRequest pictureUploadRequest,
@@ -205,6 +202,15 @@ public class PictureController {
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
+    }
+
+    @PostMapping("/review")
+    @AuthCheck(mustRole =  UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request){
+        ThrowUtils.throwIf(pictureReviewRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        pictureService.doPictureReview(pictureReviewRequest, loginUser);
+        return ResultUtils.success(true);
     }
 
 

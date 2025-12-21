@@ -93,5 +93,13 @@ public class Picture implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    private Integer reviewStatus;
+
+    private String reviewMessage;
+
+    private Long reviewerId;
+
+    private Date reviewTime;
 }
 

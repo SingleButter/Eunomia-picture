@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
+import com.zuning.eunomiapicturebackend.model.dto.picture.PictureReviewRequest;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
 import com.zuning.eunomiapicturebackend.model.entity.User;
@@ -38,5 +39,7 @@ public interface PictureService extends IService<Picture> {
     Page<PictureVO> getPictureVOPage(Page<Picture> picturePage, HttpServletRequest request);
 
     void validPicture(Picture picture);
+
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
 
 }

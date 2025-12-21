@@ -6,19 +6,23 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
 import com.zuning.eunomiapicturebackend.manager.FileManager;
 import com.zuning.eunomiapicturebackend.model.dto.file.UploadPictureResult;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
+import com.zuning.eunomiapicturebackend.model.dto.picture.PictureReviewRequest;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
 import com.zuning.eunomiapicturebackend.model.entity.User;
+import com.zuning.eunomiapicturebackend.model.enums.PictureReviewStatusEnum;
 import com.zuning.eunomiapicturebackend.model.vo.PictureVO;
 import com.zuning.eunomiapicturebackend.model.vo.UserVO;
 import com.zuning.eunomiapicturebackend.service.PictureService;
 import com.zuning.eunomiapicturebackend.mapper.PictureMapper;
 import com.zuning.eunomiapicturebackend.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,10 +60,12 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         }
         // 如果是更新图片，需要校验图片是否存在
         if (pictureId != null) {
-            boolean exists = this.lambdaQuery()
-                    .eq(Picture::getId, pictureId)
-                    .exists();
-            ThrowUtils.throwIf(!exists, ErrorCode.NOT_FOUND_ERROR, "图片不存在");
+            Picture oldPicture = this.getById(pictureId);
+            ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR,"图片不存在");
+            //仅本人或管理员可编辑
+            if(!oldPicture.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)){
+                throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
+            }
         }
         // 上传图片，得到信息
         // 按照用户 id 划分目录
@@ -199,8 +205,29 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
         }
     }
 
+    @Override
+    public void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser) {
+        Long id = pictureReviewRequest.getId();
+        Integer reviewStatus = pictureReviewRequest.getReviewStatus();
+        PictureReviewStatusEnum reviewStatusEnum = PictureReviewStatusEnum.getEnumByValue(reviewStatus);
 
+        if(id == null || reviewStatusEnum == null || reviewStatusEnum.equals(PictureReviewStatusEnum.REVIEWING)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
 
+        //判断旧的照片是否存在
+        Picture oldPicture = this.getById(id);
+        ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
+        //判断旧的照片的状态是否和修改后的相同
+        ThrowUtils.throwIf(oldPicture.getReviewStatus().equals(reviewStatus), ErrorCode.PARAMS_ERROR,"请勿重复审核");
+        //更新审核状态
+        Picture updatePicture = new Picture();
+        BeanUtils.copyProperties(pictureReviewRequest, updatePicture);
+        updatePicture.setReviewerId(loginUser.getId());
+        updatePicture.setReviewTime(new Date());
+        boolean result = this.updateById(updatePicture);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+    }
 
 
 }
