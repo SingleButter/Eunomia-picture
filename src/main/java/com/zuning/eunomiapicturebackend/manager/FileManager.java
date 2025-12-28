@@ -21,8 +21,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 已废弃，改为使用upload包里的代码
+ */
+
+
 @Service
 @Slf4j
+@Deprecated
 public class FileManager {
 
     @Resource

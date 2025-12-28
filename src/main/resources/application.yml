@@ -13,6 +13,13 @@ spring:
     url: jdbc:mysql://localhost:3306/eunomia_picture
     username: root
     password: 1234
+  # Redis 配置
+  redis:
+    database: ${redis.database}
+    host: ${redis.host}
+    port: ${redis.port}
+    timeout: ${redis.timeout}
+#    password: ${redis.password}
   servlet:
     multipart:
       max-file-size: 10MB
@@ -34,7 +41,6 @@ knife4j:
     version: 1.0
     group:
       default:
-        group-name: default group
         api-rule: package
         api-rule-resources:
           - com.zuning.eunomiapicturebackend.controller

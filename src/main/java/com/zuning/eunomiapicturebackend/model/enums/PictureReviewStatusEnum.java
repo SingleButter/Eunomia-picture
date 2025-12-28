@@ -2,7 +2,9 @@ package com.zuning.eunomiapicturebackend.model.enums;
 
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
+import lombok.Getter;
 
+@Getter
 public enum PictureReviewStatusEnum {
     REVIEWING("待审核", 0),
     PASS("拒绝", 1),
