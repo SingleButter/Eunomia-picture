@@ -101,5 +101,7 @@ public class Picture implements Serializable {
     private Long reviewerId;
 
     private Date reviewTime;
+
+    private Long spaceId;
 }
 

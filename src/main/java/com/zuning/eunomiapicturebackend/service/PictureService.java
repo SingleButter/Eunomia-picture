@@ -3,6 +3,7 @@ package com.zuning.eunomiapicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.zuning.eunomiapicturebackend.model.dto.picture.PictureEditRequest;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureReviewRequest;
 import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
@@ -32,6 +33,8 @@ public interface PictureService extends IService<Picture> {
                             PictureUploadRequest pictureUploadRequest,
                             User loginUser);
 
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
     QueryWrapper<Picture> getQueryWrapper(PictureQueryRequest pictureQueryRequest);
 
     PictureVO getPictureVO(Picture picture, HttpServletRequest request);
@@ -44,4 +47,12 @@ public interface PictureService extends IService<Picture> {
 
     void fillReviewParams(Picture picture, User loginUser);
 
+    /**
+     * 检验空间图片的权限
+     * @param loginUser
+     * @param picture
+     */
+    void checkPictureAuth(User loginUser, Picture picture);
+
+    void deletePicture(long pictureId, User loginUser);
 }
