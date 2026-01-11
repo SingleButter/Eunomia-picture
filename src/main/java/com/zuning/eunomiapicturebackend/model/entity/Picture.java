@@ -103,5 +103,7 @@ public class Picture implements Serializable {
     private Date reviewTime;
 
     private Long spaceId;
+
+    private String picColor;
 }
 

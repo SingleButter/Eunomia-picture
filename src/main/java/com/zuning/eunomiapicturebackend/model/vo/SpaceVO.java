@@ -76,6 +76,7 @@ public class SpaceVO implements Serializable {
      */
     private List<String> permissionList = new ArrayList<>();
 
+    private String picColor;
 
     /**
      * 创建用户信息
