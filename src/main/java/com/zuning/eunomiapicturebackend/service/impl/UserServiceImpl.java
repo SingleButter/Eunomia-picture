@@ -5,9 +5,11 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zuning.eunomiapicturebackend.constant.UserConstant;
 import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
+import com.zuning.eunomiapicturebackend.manager.auth.StpKit;
 import com.zuning.eunomiapicturebackend.model.dto.user.UserLoginRequest;
 import com.zuning.eunomiapicturebackend.model.dto.user.UserQueryRequest;
 import com.zuning.eunomiapicturebackend.model.dto.user.UserRegisterRequest;
@@ -103,7 +105,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态
-        request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        //记录用户登陆状态到Sa-token， 便于空间鉴权时使用，注意保证该用户信息与SpringSession中的信息过期时间一致
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(UserConstant.USER_LOGIN_STATE, user);
         return this.getLoginUserVO(user);
     }
 

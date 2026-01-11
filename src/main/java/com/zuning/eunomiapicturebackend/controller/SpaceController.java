@@ -13,6 +13,7 @@ import com.zuning.eunomiapicturebackend.constant.UserConstant;
 import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
+import com.zuning.eunomiapicturebackend.manager.auth.SpaceUserAuthManager;
 import com.zuning.eunomiapicturebackend.model.dto.picture.*;
 import com.zuning.eunomiapicturebackend.model.dto.space.*;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
@@ -28,6 +29,7 @@ import com.zuning.eunomiapicturebackend.service.SpaceService;
 import com.zuning.eunomiapicturebackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.DigestUtils;
@@ -52,8 +54,10 @@ public class SpaceController {
 
     @Resource
     private SpaceService spaceService;
+    @Autowired
+    private SpaceUserAuthManager spaceUserAuthManager;
 
-//    @Resource
+    //    @Resource
 //    private SpaceUserAuthManager spaceUserAuthManager;
 //
     @PostMapping("/add")
@@ -144,7 +148,12 @@ public class SpaceController {
 //        return ResultUtils.success(spaceVO);
         Space space = spaceService.getById(id);
         ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR);
-        return ResultUtils.success(spaceService.getSpaceVO(space, request));
+        SpaceVO spaceVO = spaceService.getSpaceVO(space,request);
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
+        spaceVO.setPermissionList(permissionList);
+        //获取就封装类
+        return ResultUtils.success(spaceVO);
     }
 
     /**

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
+import com.zuning.eunomiapicturebackend.manager.sharding.DynamicShardingManager;
 import com.zuning.eunomiapicturebackend.model.dto.space.SpaceAddRequest;
 import com.zuning.eunomiapicturebackend.model.dto.space.SpaceQueryRequest;
 import com.zuning.eunomiapicturebackend.model.entity.Space;
@@ -24,6 +25,8 @@ import com.zuning.eunomiapicturebackend.service.SpaceService;
 import com.zuning.eunomiapicturebackend.service.SpaceUserService;
 import com.zuning.eunomiapicturebackend.service.UserService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -52,6 +55,10 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+//    @Resource
+//    @Lazy
+//    private DynamicShardingManager dynamicShardingManager;
 
     @Override
     public void validSpace(Space space, boolean add) {
@@ -220,6 +227,8 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                     result = spaceUserService.save(spaceUser);
                     ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "创建团队成员记录失败");
                 }
+                //创建分表（仅对团队空间生效）
+                //dynamicShardingManager.createSpacePictureTable(space);
                 // 返回新写入的数据 id
                 return space.getId();
 
