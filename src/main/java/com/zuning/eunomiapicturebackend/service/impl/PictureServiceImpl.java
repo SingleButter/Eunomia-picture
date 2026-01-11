@@ -1,5 +1,6 @@
 package com.zuning.eunomiapicturebackend.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,6 +8,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zuning.eunomiapicturebackend.api.aliyunai.AliYunAiApi;
+import com.zuning.eunomiapicturebackend.api.aliyunai.model.CreateOutPaintingTaskRequest;
+import com.zuning.eunomiapicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.zuning.eunomiapicturebackend.exception.BusinessException;
 import com.zuning.eunomiapicturebackend.exception.ErrorCode;
 import com.zuning.eunomiapicturebackend.exception.ThrowUtils;
@@ -15,10 +19,7 @@ import com.zuning.eunomiapicturebackend.manager.upload.FilePictureUpload;
 import com.zuning.eunomiapicturebackend.manager.upload.PictureUploadTemplate;
 import com.zuning.eunomiapicturebackend.manager.upload.UrlPictureUpload;
 import com.zuning.eunomiapicturebackend.model.dto.file.UploadPictureResult;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureEditRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureReviewRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
+import com.zuning.eunomiapicturebackend.model.dto.picture.*;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
 import com.zuning.eunomiapicturebackend.model.entity.Space;
 import com.zuning.eunomiapicturebackend.model.entity.User;
@@ -35,10 +36,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +65,9 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     @Resource
     private TransactionTemplate transactionTemplate;
+
+    @Resource
+    private AliYunAiApi aliYunAiApi;
 
 
     @Override
@@ -405,6 +406,25 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             }
         }
     }
+
+    @Override
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser) {
+        // 获取图片信息
+        Long pictureId = createPictureOutPaintingTaskRequest.getPictureId();
+        Picture picture = Optional.ofNullable(this.getById(pictureId))
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ERROR));
+        // 权限校验
+        checkPictureAuth(loginUser, picture);
+        // 构造请求参数
+        CreateOutPaintingTaskRequest taskRequest = new CreateOutPaintingTaskRequest();
+        CreateOutPaintingTaskRequest.Input input = new CreateOutPaintingTaskRequest.Input();
+        input.setImageUrl(picture.getUrl());
+        taskRequest.setInput(input);
+        BeanUtil.copyProperties(createPictureOutPaintingTaskRequest, taskRequest);
+        // 创建任务
+        return aliYunAiApi.createOutPaintingTask(taskRequest);
+    }
+
 
 
 }

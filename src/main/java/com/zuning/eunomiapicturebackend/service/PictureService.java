@@ -3,10 +3,8 @@ package com.zuning.eunomiapicturebackend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureEditRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureQueryRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureReviewRequest;
-import com.zuning.eunomiapicturebackend.model.dto.picture.PictureUploadRequest;
+import com.zuning.eunomiapicturebackend.api.aliyunai.model.CreateOutPaintingTaskResponse;
+import com.zuning.eunomiapicturebackend.model.dto.picture.*;
 import com.zuning.eunomiapicturebackend.model.entity.Picture;
 import com.zuning.eunomiapicturebackend.model.entity.User;
 import com.zuning.eunomiapicturebackend.model.vo.PictureVO;
@@ -53,6 +51,8 @@ public interface PictureService extends IService<Picture> {
      * @param picture
      */
     void checkPictureAuth(User loginUser, Picture picture);
+
+    CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 
     void deletePicture(long pictureId, User loginUser);
 }
