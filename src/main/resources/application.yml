@@ -2,6 +2,10 @@ server:
   port: 8080
   servlet:
     context-path: /api
+    #cookie 30天过期
+    session:
+      cookie:
+        max-age: 604800
 spring:
   profiles:
     active: local
@@ -13,6 +17,9 @@ spring:
     url: jdbc:mysql://localhost:3306/eunomia_picture?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     username: root
     password: 1234
+  session:
+    store-type: redis
+    timeout: 604800
   # Redis 配置
   redis:
     database: ${redis.database}
@@ -23,6 +30,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 10MB
+
 
   # 空间图片分表
   shardingsphere:

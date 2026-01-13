@@ -69,11 +69,31 @@ public class CosManager {
         compressRule.setBucket(cosClientConfig.getBucket());
         compressRule.setRule("imageMogr2/format/webp");
         rules.add(compressRule);
+        //缩略图处理，仅对 > 20 KB 的图片生成缩略图
+        if(file.length() > 2 * 1024){
+            PicOperations.Rule  thumbnailRule = new PicOperations.Rule();
+            //拼接缩略图的路径
+            String thumbnailKey = FileUtil.mainName(key) + ".thumbnail" + FileUtil.getSuffix(key);
+            thumbnailRule.setFileId(thumbnailKey);
+            thumbnailRule.setBucket(cosClientConfig.getBucket());
+            //缩放规则 /thumbnail/<Width>x<Height>>(如果大于原图宽高，则不处理)
+            thumbnailRule.setRule(String.format("imageMogr2/thumbnail/%sx%s>", 256, 256));
+            rules.add(thumbnailRule);
+        }
         // 构造处理参数
         picOperations.setRules(rules);
         putObjectRequest.setPicOperations(picOperations);
         return cosClient.putObject(putObjectRequest);
     }
+
+    /**
+     * 删除对象
+     * @param key
+     */
+    public void deleteObject(String key){
+        cosClient.deleteObject(cosClientConfig.getBucket(), key);
+    }
+
 
 
 

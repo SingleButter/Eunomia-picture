@@ -112,5 +112,14 @@ create table if not exists space_user
 ALTER TABLE picture
     ADD COLUMN picColor varchar(16) null comment '图片主色调';
 
+-- 扩展用户表：新增会员功能
+ALTER TABLE user
+    ADD COLUMN vipExpireTime datetime NULL COMMENT '会员过期时间',
+    ADD COLUMN vipCode varchar(128) NULL COMMENT '会员兑换码',
+    ADD COLUMN vipNumber bigint NULL COMMENT '会员编号';
 
+
+ALTER TABLE picture
+    -- 添加新列
+    ADD COLUMN thumbnailUrl varchar(512) NULL COMMENT '缩略图 url';
 

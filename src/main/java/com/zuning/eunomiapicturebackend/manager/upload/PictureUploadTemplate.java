@@ -67,8 +67,12 @@ public abstract class PictureUploadTemplate {
             List<CIObject> objectList = processResults.getObjectList();
             if(CollUtil.isNotEmpty(objectList)){
                 CIObject compressedCiObject = objectList.get(0);
+                CIObject thumbnailObject = compressedCiObject;
+                if(objectList.size() > 1){
+                    thumbnailObject = objectList.get(1);
+                }
                 //封装压缩图返回结果
-                return buildResult(originFilename, compressedCiObject, imageInfo);
+                return buildResult(originFilename, compressedCiObject,thumbnailObject, imageInfo);
             }
             //返回原图返回结果
             return buildResult(imageInfo, originFilename, file, uploadPath);
@@ -128,11 +132,12 @@ public abstract class PictureUploadTemplate {
     }
 
 
-    private UploadPictureResult buildResult(String originFilename, CIObject compressedCiObject, ImageInfo imageInfo) {
+    private UploadPictureResult buildResult(String originFilename, CIObject compressedCiObject, CIObject thumbnailCiObject, ImageInfo imageInfo) {
         UploadPictureResult uploadPictureResult = new UploadPictureResult();
         int picWidth = compressedCiObject.getWidth();
         int picHeight = compressedCiObject.getHeight();
         double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+        // 设置图片为压缩后的地址
         uploadPictureResult.setPicName(FileUtil.mainName(originFilename));
         uploadPictureResult.setPicWidth(picWidth);
         uploadPictureResult.setPicHeight(picHeight);
@@ -140,8 +145,9 @@ public abstract class PictureUploadTemplate {
         uploadPictureResult.setPicFormat(compressedCiObject.getFormat());
         uploadPictureResult.setPicColor(imageInfo.getAve());
         uploadPictureResult.setPicSize(compressedCiObject.getSize().longValue());
-        // 设置图片为压缩后的地址
         uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + compressedCiObject.getKey());
+        // 设置缩略图地址
+        uploadPictureResult.setThumbnailUrl(cosClientConfig.getHost() + "/" + thumbnailCiObject.getKey());
         return uploadPictureResult;
     }
 

@@ -208,7 +208,7 @@ public class PictureController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         //空间权限校验
         Long spaceId = pictureQueryRequest.getSpaceId();
-        if(spaceId != null){
+        if(spaceId == null){
             //公开图库，普通用户默认只能看到审核通过的数据
             pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
             pictureQueryRequest.setNullSpaceId(true);
